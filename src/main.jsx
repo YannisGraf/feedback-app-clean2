@@ -29,12 +29,15 @@ function App() {
       .eq('date', dateStr)
       .limit(1);
 
+    console.log("🧾 Menu fetch result:", menus);
+
     if (menuError || !menus || menus.length === 0) {
       console.warn('⚠️ No menu found for this date');
       return;
     }
 
     const menuId = menus[0].id;
+    console.log("📦 Using menu_id:", menuId);
 
     const { data: mealsData, error: mealsError } = await supabase
       .from('meals')
@@ -44,6 +47,7 @@ function App() {
     if (mealsError) {
       console.error('❌ Failed to fetch meals:', mealsError.message);
     } else {
+      console.log("🍽 Meals fetch result:", mealsData);
       setMeals(mealsData);
     }
   };
@@ -79,9 +83,11 @@ function App() {
         type="date"
         value={selectedDate}
         onChange={(e) => {
-          const isoDate = new Date(e.target.value).toISOString().split('T')[0];
-          setSelectedDate(isoDate);
-          fetchMeals(isoDate);
+          const inputDate = e.target.value; // e.g. 2025-05-14
+          const [year, month, day] = inputDate.split('-');
+          const formattedDate = `${year}-${month}-${day}`;
+          setSelectedDate(formattedDate);
+          fetchMeals(formattedDate);
         }}
         className="w-full border p-2 rounded mb-4"
       />
