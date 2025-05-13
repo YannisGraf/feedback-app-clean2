@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createClient } from '@supabase/supabase-js';
@@ -16,6 +16,8 @@ function App() {
   const [feedback, setFeedback] = useState({});
 
   const fetchMeals = async (dateStr) => {
+    console.log("📅 Fetching meals for:", dateStr);
+
     setMeals([]);
     setSelectedMeals([]);
     setRatings({});
@@ -28,7 +30,7 @@ function App() {
       .limit(1);
 
     if (menuError || !menus || menus.length === 0) {
-      console.warn('No menu found for this date');
+      console.warn('⚠️ No menu found for this date');
       return;
     }
 
@@ -40,7 +42,7 @@ function App() {
       .eq('menu_id', menuId);
 
     if (mealsError) {
-      console.error('Failed to fetch meals:', mealsError.message);
+      console.error('❌ Failed to fetch meals:', mealsError.message);
     } else {
       setMeals(mealsData);
     }
@@ -64,7 +66,7 @@ function App() {
       };
     });
 
-    console.log('Submitted:', { date: selectedDate, meals: result });
+    console.log('✅ Submitted:', { date: selectedDate, meals: result });
     alert('Feedback submitted! (Console only for now)');
   };
 
@@ -77,9 +79,9 @@ function App() {
         type="date"
         value={selectedDate}
         onChange={(e) => {
-          const dateStr = e.target.value;
-          setSelectedDate(dateStr);
-          fetchMeals(dateStr);
+          const isoDate = new Date(e.target.value).toISOString().split('T')[0];
+          setSelectedDate(isoDate);
+          fetchMeals(isoDate);
         }}
         className="w-full border p-2 rounded mb-4"
       />
